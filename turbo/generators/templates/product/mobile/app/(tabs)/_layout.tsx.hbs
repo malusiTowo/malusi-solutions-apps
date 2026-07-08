@@ -1,0 +1,32 @@
+import { Tabs } from "expo-router";
+import { Text } from "react-native";
+import type { ColorValue } from "react-native";
+
+function TabIcon({ icon, color }: { icon: string; color: ColorValue }) {
+  return <Text style=\{{ fontSize: 22, color }}>{icon}</Text>;
+}
+
+export default function TabsLayout() {
+  return (
+    <Tabs
+      screenOptions=\{{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: "#141414", borderTopColor: "#2A2A2C" },
+        tabBarActiveTintColor: "#C8F135",
+        tabBarInactiveTintColor: "#6B6B70",
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options=\{{ title: "Home", tabBarIcon: ({ color }) => <TabIcon icon="⌂" color={color} /> }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options=\{{
+          title: "Profile",
+          tabBarIcon: ({ color }) => <TabIcon icon="◍" color={color} />,
+        }}
+      />
+    </Tabs>
+  );
+}

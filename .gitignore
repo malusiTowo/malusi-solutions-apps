@@ -1,0 +1,44 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# build outputs
+dist/
+.next/
+out/
+expo-export/
+*.tsbuildinfo
+
+# turbo
+.turbo/
+
+# expo
+.expo/
+web-build/
+*.orig.*
+android/
+ios/
+.expo-shared/
+
+# env
+.env
+.env.*
+!.env.example
+
+# sentry
+.sentryclirc
+
+# logs / os
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# testing
+coverage/

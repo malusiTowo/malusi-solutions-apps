@@ -1,0 +1,11 @@
+# oxfmt reads this file by default. Generator templates are Handlebars, not
+# valid TS/JS, so exclude them from formatting.
+turbo/generators/templates/
+
+# build artifacts (also gitignored)
+**/.next/
+**/dist/
+**/.expo/
+**/expo-export/
+**/.turbo/
+pnpm-lock.yaml

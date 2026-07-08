@@ -1,0 +1,26 @@
+{
+  "name": "@{{name}}/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./api": "./src/api/index.ts",
+    "./models": "./src/models/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/api": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@trpc/server": "11.18.0",
+    "effect": "3.21.4"
+  },
+  "devDependencies": {
+    "@tooling/typescript": "workspace:*",
+    "typescript": "6.0.3"
+  }
+}

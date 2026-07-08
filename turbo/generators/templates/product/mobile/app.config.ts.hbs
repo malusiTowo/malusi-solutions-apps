@@ -1,0 +1,30 @@
+import type { ExpoConfig } from "expo/config";
+
+const config: ExpoConfig = {
+  name: "{{titleCase name}}",
+  slug: "{{name}}",
+  scheme: "{{name}}",
+  version: "0.1.0",
+  orientation: "portrait",
+  userInterfaceStyle: "dark",
+  runtimeVersion: { policy: "fingerprint" },
+  ios: {
+    bundleIdentifier: "com.malusisolutions.{{name}}",
+    supportsTablet: true,
+    infoPlist: { ITSAppUsesNonExemptEncryption: false },
+  },
+  android: {
+    package: "com.malusisolutions.{{name}}",
+  },
+  plugins: [
+    "expo-router",
+    "expo-secure-store",
+    "expo-updates",
+    "expo-notifications",
+    "@sentry/react-native/expo",
+  ],
+  experiments: { typedRoutes: false },
+  extra: { eas: {} },
+};
+
+export default config;

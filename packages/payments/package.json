@@ -1,0 +1,21 @@
+{
+  "name": "@repo/payments",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "stripe": "22.3.0"
+  },
+  "devDependencies": {
+    "@tooling/typescript": "workspace:*",
+    "typescript": "6.0.3"
+  }
+}

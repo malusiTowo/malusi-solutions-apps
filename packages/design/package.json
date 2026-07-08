@@ -1,0 +1,23 @@
+{
+  "name": "@repo/design",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens": "./src/tokens.ts",
+    "./unistyles": "./src/unistyles.ts",
+    "./tailwind": "./src/tailwind.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "oxlint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tooling/typescript": "workspace:*",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  }
+}

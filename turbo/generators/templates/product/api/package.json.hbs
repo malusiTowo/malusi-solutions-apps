@@ -1,0 +1,38 @@
+{
+  "name": "@{{name}}/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "clean": "rm -rf .turbo .next node_modules",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "7.5.13",
+    "@{{name}}/core": "workspace:*",
+    "@repo/api": "workspace:*",
+    "@repo/design": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@t3-oss/env-nextjs": "0.13.11",
+    "@trpc/server": "11.18.0",
+    "effect": "3.21.4",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "superjson": "2.2.6",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.2",
+    "@tooling/typescript": "workspace:*",
+    "@types/node": "22.13.9",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "tailwindcss": "4.3.2",
+    "typescript": "6.0.3"
+  }
+}

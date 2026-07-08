@@ -1,0 +1,34 @@
+{
+  "name": "@repo/analytics",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/core.ts",
+    "./web": "./src/web.ts",
+    "./native": "./src/native.tsx"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "posthog-js": "1.398.2",
+    "posthog-react-native": "4.54.4"
+  },
+  "devDependencies": {
+    "@tooling/typescript": "workspace:*",
+    "@types/react": "19.2.7",
+    "typescript": "6.0.3"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
+  }
+}

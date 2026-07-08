@@ -1,0 +1,22 @@
+import { Button, Card, CardContent, CardTitle } from "@repo/ui";
+
+export default function HomePage() {
+  return (
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-8 px-6 py-16 text-center">
+      <h1 className="text-5xl font-extrabold">
+        {{titleCase name}} <span className="text-accent">is live.</span>
+      </h1>
+      <p className="max-w-md text-lg text-muted-foreground">
+        Next.js API + landing, wired to the shared @repo/* bricks. Fill in your env keys and start
+        building.
+      </p>
+      <Button>Get started</Button>
+      <Card className="w-full max-w-sm text-left">
+        <CardTitle className="mb-2 text-base">API status</CardTitle>
+        <CardContent className="text-muted-foreground">
+          tRPC is live at <code className="text-accent">/api/trpc/health</code>.
+        </CardContent>
+      </Card>
+    </main>
+  );
+}

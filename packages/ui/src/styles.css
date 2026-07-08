@@ -1,0 +1,3 @@
+/* Shared UI primitives rely on the Tailwind preset from @repo/design.
+   Import this file after Tailwind in a consuming app if you want the UI
+   package's source scanned; content globbing is configured per-app. */

@@ -1,0 +1,17 @@
+import { createApi } from "@repo/api";
+import { type Mongo, MongoLive } from "@repo/db";
+import { ManagedRuntime } from "effect";
+
+/** {{titleCase name}}'s tRPC instance. `AppEnv` is the app's Effect service set. */
+export type AppEnv = Mongo;
+
+export const AppLive = MongoLive;
+export const runtime = ManagedRuntime.make(AppLive);
+
+const api = createApi<AppEnv>();
+
+export const router = api.router;
+export const publicProcedure = api.publicProcedure;
+export const protectedProcedure = api.protectedProcedure;
+export const createCallerFactory = api.createCallerFactory;
+export const runEffect = api.runEffect;

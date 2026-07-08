@@ -1,0 +1,50 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "MONGODB_URI",
+    "MONGODB_DB_NAME",
+    "CLERK_SECRET_KEY",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "RESEND_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "NEXT_PUBLIC_POSTHOG_KEY",
+    "NEXT_PUBLIC_POSTHOG_HOST",
+    "SENTRY_DSN",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "SENTRY_AUTH_TOKEN",
+    "EXPO_PUBLIC_API_URL",
+    "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
+    "EXPO_PUBLIC_POSTHOG_KEY",
+    "EXPO_PUBLIC_POSTHOG_HOST",
+    "EXPO_PUBLIC_SENTRY_DSN"
+  ],
+  "globalDependencies": [".env"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "expo-export/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {},
+    "format": {},
+    "typecheck": {
+      "dependsOn": ["^topo"]
+    },
+    "test": {
+      "dependsOn": ["^topo"]
+    },
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

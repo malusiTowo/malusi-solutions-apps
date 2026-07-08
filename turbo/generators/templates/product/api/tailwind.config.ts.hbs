@@ -1,0 +1,7 @@
+import { createTailwindPreset } from "@repo/design/tailwind";
+import type { Config } from "tailwindcss";
+
+export default {
+  presets: [createTailwindPreset() as Config],
+  content: ["./src/**/*.{ts,tsx}", "../../../packages/ui/src/**/*.{ts,tsx}"],
+} satisfies Config;

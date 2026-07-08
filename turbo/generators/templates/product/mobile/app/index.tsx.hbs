@@ -1,0 +1,21 @@
+import { useRouter } from "expo-router";
+import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
+import { H1, Muted, PrimaryButton, Screen } from "~/components/ui";
+
+export default function Onboarding() {
+  const router = useRouter();
+  return (
+    <Screen>
+      <View style={styles.spacer} />
+      <H1>{{titleCase name}}</H1>
+      <Muted>Welcome. This app is wired to the shared @repo/* bricks and your API.</Muted>
+      <View style={styles.spacer} />
+      <PrimaryButton label="Get started" onPress={() => router.replace("/(tabs)")} />
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create(() => ({
+  spacer: { flex: 1 },
+}));

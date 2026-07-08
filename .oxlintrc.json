@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "import", "react"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/.expo/**",
+    "**/expo-export/**",
+    "**/.turbo/**",
+    "**/turbo/generators/templates/**",
+    "**/*.gen.ts"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "typescript/no-explicit-any": "warn",
+    "react/react-in-jsx-scope": "off"
+  }
+}

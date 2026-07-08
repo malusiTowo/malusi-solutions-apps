@@ -1,0 +1,50 @@
+import type { ReactNode } from "react";
+import { Pressable, type PressableProps, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet } from "react-native-unistyles";
+
+export function Screen({ children }: { children: ReactNode }) {
+  return (
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.inner}>{children}</View>
+    </SafeAreaView>
+  );
+}
+
+export function H1({ children }: { children: ReactNode }) {
+  return <Text style={styles.h1}>{children}</Text>;
+}
+
+export function Muted({ children }: { children: ReactNode }) {
+  return <Text style={styles.muted}>{children}</Text>;
+}
+
+export function PrimaryButton({ label, ...props }: PressableProps & { label: string }) {
+  return (
+    <Pressable style={styles.button} {...props}>
+      <Text style={styles.buttonLabel}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create((theme) => ({
+  screen: { flex: 1, backgroundColor: theme.colors.background },
+  inner: { flex: 1, paddingHorizontal: theme.spacing.xl, gap: theme.spacing.lg },
+  h1: {
+    color: theme.colors.text,
+    fontSize: theme.fontSize["4xl"],
+    fontWeight: theme.fontWeight.extrabold,
+  },
+  muted: { color: theme.colors.textSecondary, fontSize: theme.fontSize.sm },
+  button: {
+    backgroundColor: theme.colors.accent,
+    borderRadius: theme.radii.full,
+    paddingVertical: theme.spacing.lg,
+    alignItems: "center",
+  },
+  buttonLabel: {
+    color: theme.colors.onAccent,
+    fontSize: theme.fontSize.base,
+    fontWeight: theme.fontWeight.bold,
+  },
+}));

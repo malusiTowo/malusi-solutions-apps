@@ -1,0 +1,17 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  transpilePackages: [
+    "@{{name}}/core",
+    "@repo/api",
+    "@repo/auth",
+    "@repo/db",
+    "@repo/design",
+    "@repo/ui",
+  ],
+  serverExternalPackages: ["mongodb"],
+  typescript: { ignoreBuildErrors: false },
+};
+
+export default nextConfig;

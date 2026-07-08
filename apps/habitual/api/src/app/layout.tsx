@@ -1,0 +1,20 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Habitual — build habits that actually stick",
+  description: "A universal habit tracker — gamified & AI-powered.",
+};
+
+const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  const content = (
+    <html lang="en">
+      <body className="min-h-screen bg-background text-foreground antialiased">{children}</body>
+    </html>
+  );
+  return hasClerk ? <ClerkProvider>{content}</ClerkProvider> : content;
+}

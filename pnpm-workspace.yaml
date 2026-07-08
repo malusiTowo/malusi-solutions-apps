@@ -1,0 +1,11 @@
+packages:
+  - "apps/*/*"
+  - "packages/*"
+  - "tooling/*"
+
+onlyBuiltDependencies:
+  - "@clerk/shared"
+  - "@sentry/cli"
+  - "esbuild"
+  - "sharp"
+  - "unrs-resolver"
