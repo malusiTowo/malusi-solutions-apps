@@ -1,0 +1,22 @@
+import { type DatabaseHandle, layerConfig, makeOps } from "@repo/db";
+import { Context, type Layer } from "effect";
+import * as schema from "./schema";
+
+/**
+ * {{titleCase name}}'s database service.
+ *
+ * The tag lives here rather than in `@repo/db` so it is nominally distinct from
+ * every other product's, and so the handle is typed by *this* schema.
+ */
+export type {{titleCase name}}Schema = typeof schema;
+
+export class Database extends Context.Tag("@{{name}}/core/Database")<
+  Database,
+  DatabaseHandle<{{titleCase name}}Schema>
+>() {}
+
+/** Reads `DATABASE_URL` at layer-construction time — never at import time. */
+export const DatabaseLive: Layer.Layer<Database> = layerConfig(Database, schema);
+
+/** Query helpers bound to this product's tag, so call sites never pass it. */
+export const { query, transaction, transactionPromise } = makeOps(Database);

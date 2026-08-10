@@ -1,12 +1,16 @@
 import { Schema } from "effect";
 
-/** {{titleCase name}}-specific domain models. Product logic lives here. */
-
-export const ITEMS_COLLECTION = "items";
+/** {{titleCase name}}-specific domain models. Product logic lives here.
+ *
+ *  Client-safe by contract: the mobile app imports this through
+ *  `@{{name}}/core/models`, so it must never reach a server dependency. The
+ *  Postgres tables mirroring these types live in `../db/schema.ts`, which imports
+ *  *from* here and is never imported back. */
 
 export class Item extends Schema.Class<Item>("Item")({
   id: Schema.String,
   userId: Schema.String,
   title: Schema.String,
-  createdAt: Schema.Number,
+  createdAt: Schema.DateFromSelf,
+  updatedAt: Schema.DateFromSelf,
 }) {}

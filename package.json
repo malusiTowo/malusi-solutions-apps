@@ -10,13 +10,17 @@
     "format:fix": "oxfmt .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "codegen": "turbo run codegen",
     "clean": "turbo run clean && git clean -xdf node_modules",
-    "gen": "turbo gen"
+    "gen": "turbo gen",
+    "factory": "tsx tooling/factory/src/cli.ts"
   },
   "devDependencies": {
+    "@tooling/factory": "workspace:*",
     "@turbo/gen": "2.10.4",
     "oxfmt": "0.58.0",
     "oxlint": "1.73.0",
+    "tsx": "4.20.6",
     "turbo": "2.10.4",
     "typescript": "6.0.3"
   },

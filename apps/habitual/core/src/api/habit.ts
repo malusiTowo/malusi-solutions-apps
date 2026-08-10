@@ -1,68 +1,70 @@
 import { requireUserId } from "@repo/api";
-import { Repository } from "@repo/db";
 import { Effect, Schema } from "effect";
-import { HABITS_COLLECTION, HabitColors } from "../models/habit";
-import { protectedProcedure, router, runEffect } from "./trpc";
+import { createHabit, listHabits } from "../db";
+import { HabitColors } from "../models/habit";
+import { builder, decodeInput, runEffect } from "./builder";
+import { HabitColorEnum, HabitType } from "./types";
 
-/** Input validators (Effect Schema, used as tRPC custom parsers). */
-const CreateHabitInput = Schema.Struct({
+/** The wire contract. */
+const CreateHabitInput = builder.inputType("CreateHabitInput", {
+  fields: (t) => ({
+    name: t.string({ required: true }),
+    color: t.field({ type: HabitColorEnum, required: true }),
+    repeatDays: t.intList({ required: true }),
+    reminderAt: t.string(),
+    dailyGoal: t.string(),
+  }),
+});
+
+/**
+ * The refinements GraphQL cannot express — here, a non-empty name.
+ *
+ * The two declarations are bound by the assignability check below, so adding a
+ * field to one and not the other is a `pnpm typecheck` failure rather than a
+ * runtime surprise.
+ */
+const CreateHabitSchema = Schema.Struct({
   name: Schema.String.pipe(Schema.minLength(1)),
   color: Schema.Literal(...HabitColors),
   repeatDays: Schema.Array(Schema.Number),
-  reminderAt: Schema.optional(Schema.String),
-  dailyGoal: Schema.optional(Schema.String),
+  reminderAt: Schema.optional(Schema.NullOr(Schema.String)),
+  dailyGoal: Schema.optional(Schema.NullOr(Schema.String)),
 });
 
-const parseCreateHabit = Schema.decodeUnknownSync(CreateHabitInput);
+type CreateHabitPayload = typeof CreateHabitSchema.Type;
+const _createHabitShapesAgree: (
+  input: typeof CreateHabitInput.$inferInput,
+) => CreateHabitPayload = (input) => input;
 
-export interface HabitDoc {
-  id: string;
-  userId: string;
-  name: string;
-  color: (typeof HabitColors)[number];
-  repeatDays: readonly number[];
-  reminderAt?: string;
-  dailyGoal?: string;
-  streak: number;
-  createdAt: number;
-}
+const parseCreateHabit = decodeInput(CreateHabitSchema);
 
-/**
- * Habit router — skeleton procedures. `list`/`create` exercise the full stack
- * (auth → Effect → Mongo) but the streak/XP engine is a follow-up.
- */
-export const habitRouter = router({
-  list: protectedProcedure.query(({ ctx }) =>
-    runEffect(
-      ctx,
-      Effect.gen(function* () {
-        const userId = yield* requireUserId;
-        return yield* Repository.findMany<HabitDoc>(HABITS_COLLECTION, { userId });
-      }),
-    ),
-  ),
+builder.queryField("habits", (t) =>
+  t.withAuth({ authenticated: true }).field({
+    type: [HabitType],
+    resolve: (_parent, _args, ctx) => runEffect(ctx, Effect.flatMap(requireUserId, listHabits)),
+  }),
+);
 
-  create: protectedProcedure
-    .input((raw: unknown) => parseCreateHabit(raw))
-    .mutation(({ ctx, input }) =>
-      runEffect(
+builder.mutationField("createHabit", (t) =>
+  t.withAuth({ authenticated: true }).field({
+    type: HabitType,
+    args: { input: t.arg({ type: CreateHabitInput, required: true }) },
+    resolve: (_parent, args, ctx) => {
+      const input = parseCreateHabit(args.input);
+      return runEffect(
         ctx,
-        Effect.gen(function* () {
-          const userId = yield* requireUserId;
-          const doc: HabitDoc = {
-            id: crypto.randomUUID(),
+        Effect.flatMap(requireUserId, (userId) =>
+          createHabit({
             userId,
             name: input.name,
             color: input.color,
-            repeatDays: input.repeatDays,
-            reminderAt: input.reminderAt,
-            dailyGoal: input.dailyGoal,
-            streak: 0,
-            createdAt: Date.now(),
-          };
-          yield* Repository.insertOne<HabitDoc>(HABITS_COLLECTION, doc);
-          return doc;
-        }),
-      ),
-    ),
-});
+            repeatDays: [...input.repeatDays],
+            // The columns are nullable; the wire input is optional.
+            reminderAt: input.reminderAt ?? null,
+            dailyGoal: input.dailyGoal ?? null,
+          }),
+        ),
+      );
+    },
+  }),
+);

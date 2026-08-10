@@ -1,5 +1,10 @@
 import type { ExpoConfig } from "expo/config";
 
+/**
+ * `extra.eas.projectId` and `updates.url` are filled in by `eas init`, which the
+ * factory's `expo` driver runs. The Sentry plugin's org/project must match the
+ * mobile project the `sentry` driver creates — hence the `-mobile-dev` suffix.
+ */
 const config: ExpoConfig = {
   name: "{{titleCase name}}",
   slug: "{{name}}",
@@ -8,6 +13,9 @@ const config: ExpoConfig = {
   orientation: "portrait",
   userInterfaceStyle: "dark",
   runtimeVersion: { policy: "fingerprint" },
+  updates: {
+    // Set by `eas init`: https://u.expo.dev/<project-id>
+  },
   ios: {
     bundleIdentifier: "com.malusisolutions.{{name}}",
     supportsTablet: true,
@@ -21,10 +29,23 @@ const config: ExpoConfig = {
     "expo-secure-store",
     "expo-updates",
     "expo-notifications",
-    "@sentry/react-native/expo",
+    [
+      "@sentry/react-native/expo",
+      {
+        organization: "malusi-solutions",
+        project: "{{name}}-mobile-dev",
+      },
+    ],
   ],
-  experiments: { typedRoutes: false },
-  extra: { eas: {} },
+  experiments: {
+    // Kept off so `tsc` passes without a prebuild generating route types.
+    typedRoutes: false,
+  },
+  extra: {
+    eas: {
+      // projectId is written here by `eas init`.
+    },
+  },
 };
 
 export default config;

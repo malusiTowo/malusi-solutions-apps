@@ -4,20 +4,26 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./orm": "./src/orm.ts",
+    "./pg": "./src/pg.ts",
+    "./migrate": "./src/migrate.ts"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "oxlint .",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@neondatabase/serverless": "1.1.0",
+    "drizzle-orm": "0.45.2",
     "effect": "3.21.4",
-    "mongodb": "7.5.0"
+    "ws": "8.21.3"
   },
   "devDependencies": {
     "@tooling/typescript": "workspace:*",
+    "@types/ws": "8.18.1",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
   }

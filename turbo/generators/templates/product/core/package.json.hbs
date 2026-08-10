@@ -6,21 +6,34 @@
   "exports": {
     ".": "./src/index.ts",
     "./api": "./src/api/index.ts",
-    "./models": "./src/models/index.ts"
+    "./models": "./src/models/index.ts",
+    "./db": "./src/db/index.ts"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "oxlint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "codegen": "tsx scripts/schema.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@pothos/core": "4.13.1",
+    "@pothos/plugin-scope-auth": "4.1.7",
+    "@repo/ai": "workspace:*",
     "@repo/api": "workspace:*",
     "@repo/db": "workspace:*",
-    "@trpc/server": "11.18.0",
-    "effect": "3.21.4"
+    "drizzle-orm": "0.45.2",
+    "effect": "3.21.4",
+    "graphql": "16.14.2"
   },
   "devDependencies": {
     "@tooling/typescript": "workspace:*",
+    "dotenv": "17.4.2",
+    "drizzle-kit": "0.31.10",
+    "tsx": "4.23.11",
     "typescript": "6.0.3"
   }
 }

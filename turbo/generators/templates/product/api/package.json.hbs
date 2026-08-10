@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev --port {{devPort}}",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start --port {{devPort}}",
     "clean": "rm -rf .turbo .next node_modules",
     "lint": "oxlint .",
     "typecheck": "tsc --noEmit"
@@ -14,16 +14,21 @@
   "dependencies": {
     "@clerk/nextjs": "7.5.13",
     "@{{name}}/core": "workspace:*",
+    "@repo/ai": "workspace:*",
+    "@repo/analytics": "workspace:*",
     "@repo/api": "workspace:*",
     "@repo/design": "workspace:*",
+    "@repo/email": "workspace:*",
+    "@repo/notifications": "workspace:*",
+    "@repo/payments": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@sentry/nextjs": "10.64.0",
     "@t3-oss/env-nextjs": "0.13.11",
-    "@trpc/server": "11.18.0",
     "effect": "3.21.4",
+    "graphql": "16.14.2",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "superjson": "2.2.6",
     "zod": "4.4.3"
   },
   "devDependencies": {

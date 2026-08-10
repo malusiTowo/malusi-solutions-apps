@@ -1,17 +1,32 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Workspace packages ship raw TypeScript; Next transpiles them.
   transpilePackages: [
     "@{{name}}/core",
+    "@repo/ai",
+    "@repo/analytics",
     "@repo/api",
     "@repo/auth",
     "@repo/db",
     "@repo/design",
+    "@repo/email",
+    "@repo/notifications",
+    "@repo/payments",
     "@repo/ui",
   ],
-  serverExternalPackages: ["mongodb"],
+  // `ws` has optional native deps (bufferutil, utf-8-validate) that must not be
+  // bundled; the Neon driver is kept beside it so both resolve from node_modules.
+  serverExternalPackages: ["@neondatabase/serverless", "ws"],
   typescript: { ignoreBuildErrors: false },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // org/project come from SENTRY_ORG / SENTRY_PROJECT, written by the sentry driver.
+  silent: !process.env.CI,
+  telemetry: false,
+  // Source map upload needs an auth token; skip it when there isn't one.
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+});

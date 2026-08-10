@@ -2,7 +2,7 @@ import { createClerkClient } from "@clerk/backend";
 import { Context, Data, Effect } from "effect";
 
 /**
- * Generic auth primitives shared server-side. Product APIs build their tRPC
+ * Generic auth primitives shared server-side. Product APIs build their GraphQL
  * context from an `AuthContext`; this package resolves that context from an
  * incoming `Request` using Clerk, and exposes Effect helpers for guarding
  * protected operations. It contains no product-specific logic.

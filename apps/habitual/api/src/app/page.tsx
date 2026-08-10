@@ -33,11 +33,9 @@ export default function HomePage() {
       <Card className="w-full max-w-sm text-left">
         <CardTitle className="mb-2 text-base">API status</CardTitle>
         <CardContent className="text-muted-foreground">
-          tRPC is live at{" "}
-          <code className="rounded bg-surface-muted px-1.5 py-0.5 text-accent">
-            /api/trpc/health
-          </code>
-          . Mobile app talks to this server.
+          GraphQL is live at{" "}
+          <code className="rounded bg-surface-muted px-1.5 py-0.5 text-accent">/api/graphql</code>.
+          Mobile app talks to this server.
         </CardContent>
       </Card>
     </main>

@@ -2,6 +2,15 @@
 # valid TS/JS, so exclude them from formatting.
 turbo/generators/templates/
 
+# drizzle-kit output. Committed, but regenerated verbatim on every `db:generate` —
+# reformatting the snapshots would just churn against the next run.
+**/drizzle/
+
+# GraphQL artifacts. Same deal: committed so a fresh clone can build without running
+# codegen first, but rewritten verbatim by `pnpm codegen`.
+**/src/gql/
+**/schema.graphql
+
 # build artifacts (also gitignored)
 **/.next/
 **/dist/

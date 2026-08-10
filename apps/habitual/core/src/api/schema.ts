@@ -1,0 +1,19 @@
+import { builder } from "./builder";
+
+// Imported for their side effects: each module registers its fields on the builder.
+// Adding a feature module here is what puts it on the wire.
+import "./system";
+import "./habit";
+import "./sms";
+
+/**
+ * Habitual's executable schema.
+ *
+ * `sortSchema` keeps the emitted `schema.graphql` stable regardless of the order the
+ * modules above happen to be evaluated in — that file is committed, so an unstable
+ * ordering would show up as churn in every review.
+ *
+ * Nothing reachable from here constructs the `ManagedRuntime`, which is what lets
+ * `scripts/schema.ts` emit the SDL with no environment configured.
+ */
+export const schema = builder.toSchema({ sortSchema: true });

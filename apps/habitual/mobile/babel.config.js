@@ -7,7 +7,8 @@ module.exports = (api) => {
       [
         "react-native-unistyles/plugin",
         {
-          root: "app",
+          // Routes moved to src/app; this must match or styles go untransformed.
+          root: "src",
         },
       ],
       // Reanimated/Worklets plugin must be listed last.

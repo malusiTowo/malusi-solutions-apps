@@ -18,7 +18,8 @@
     "**/expo-export/**",
     "**/.turbo/**",
     "**/turbo/generators/templates/**",
-    "**/*.gen.ts"
+    "**/*.gen.ts",
+    "**/src/gql/**"
   ],
   "rules": {
     "no-unused-vars": "warn",

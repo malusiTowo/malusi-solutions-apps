@@ -1,0 +1,47 @@
+name: Migrate
+
+# Deliberately manual. Migrations are not part of CI (which has no database) and not
+# part of the Vercel build (drizzle-kit is a devDependency, and a deploy should never
+# be able to alter a schema as a side effect). The `environment` below is what gates
+# this behind a required reviewer and holds the connection string.
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        description: Product whose core package owns the schema
+        required: true
+        default: habitual
+      environment:
+        description: Target environment
+        required: true
+        default: prod
+        type: choice
+        options: [dev, preview, prod]
+
+concurrency:
+  # One migration at a time per product+environment; never cancel one in flight.
+  group: migrate-${{ inputs.product }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.15.1 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Show pending migrations
+        run: ls -1 apps/${{ inputs.product }}/core/drizzle/*.sql
+
+      - name: Migrate
+        # DDL over the direct endpoint: the pooler rejects some schema statements.
+        env:
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+        run: pnpm --filter @${{ inputs.product }}/core db:migrate

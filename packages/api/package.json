@@ -4,19 +4,24 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./yoga": "./src/yoga.ts"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "oxlint .",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@graphql-yoga/plugin-disable-introspection": "2.22.2",
+    "@pothos/core": "4.13.1",
+    "@pothos/plugin-scope-auth": "4.1.7",
     "@repo/auth": "workspace:*",
-    "@trpc/server": "11.18.0",
     "effect": "3.21.4",
-    "superjson": "2.2.6"
+    "graphql": "16.14.2",
+    "graphql-scalars": "1.25.0",
+    "graphql-yoga": "5.21.2"
   },
   "devDependencies": {
     "@tooling/typescript": "workspace:*",

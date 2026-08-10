@@ -1,0 +1,40 @@
+import type { ItemRow } from "../db";
+import { builder } from "./builder";
+
+/**
+ * GraphQL types for {{titleCase name}}.
+ *
+ * Object types are `objectRef`s over types the domain already declares — the schema
+ * describes the domain, it does not restate it. When a field is a `ReadonlyArray`,
+ * reach for `t.field({ type: [...], resolve })` rather than an expose helper: the
+ * expose helpers require a mutable array, while a resolver return type is checked
+ * covariantly.
+ */
+
+export const ItemType = builder.objectRef<ItemRow>("Item").implement({
+  fields: (t) => ({
+    id: t.exposeString("id"),
+    userId: t.exposeString("userId"),
+    title: t.exposeString("title"),
+    createdAt: t.field({ type: "DateTime", resolve: (item) => item.createdAt }),
+    updatedAt: t.field({ type: "DateTime", resolve: (item) => item.updatedAt }),
+  }),
+});
+
+/**
+ * `ts` is `Float`, not `Int`. It carries `Date.now()`, and graphql-js rejects any
+ * `Int` outside the 32-bit range — an epoch in milliseconds is well past it.
+ */
+export const HealthType = builder
+  .objectRef<{ readonly ok: true; readonly service: string; readonly ts: number }>("Health")
+  .implement({
+    fields: (t) => ({
+      ok: t.exposeBoolean("ok"),
+      service: t.exposeString("service"),
+      ts: t.field({ type: "Float", resolve: (health) => health.ts }),
+    }),
+  });
+
+export const PingType = builder.objectRef<{ readonly ok: true }>("Ping").implement({
+  fields: (t) => ({ ok: t.exposeBoolean("ok") }),
+});

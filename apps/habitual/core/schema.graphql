@@ -1,0 +1,149 @@
+input CreateHabitInput {
+  color: HabitColor!
+  dailyGoal: String
+  name: String!
+  reminderAt: String
+  repeatDays: [Int!]!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTime
+
+"""A habit the signed-in user is tracking."""
+type Habit {
+  color: HabitColor!
+  createdAt: DateTime!
+  dailyGoal: String
+  id: String!
+  name: String!
+  reminderAt: String
+
+  """Days of week this habit repeats: 0 = Sunday … 6 = Saturday."""
+  repeatDays: [Int!]!
+  streak: Int!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+enum HabitColor {
+  blue
+  lime
+  orange
+  pink
+  purple
+}
+
+type Health {
+  ok: Boolean!
+  service: String!
+  ts: Float!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type Mutation {
+  createHabit(input: CreateHabitInput!): Habit!
+  sendSms(input: SendSmsInput!): SendResult!
+}
+
+type Ping {
+  ok: Boolean!
+}
+
+type Query {
+  dbPing: Ping!
+  habits: [Habit!]!
+  health: Health!
+  smsMessage(messageId: String!): SmsMessage
+  smsMessages: [SmsMessage!]!
+}
+
+type SendRecipient {
+  body: String
+  channel: String
+  messageId: String!
+  to: String!
+}
+
+type SendResult {
+  """One entry per (recipient, channel) pair — each separately billed."""
+  recipients: [SendRecipient!]!
+  status: SmsStatus!
+  templateId: String
+  templateName: String
+}
+
+input SendSmsBodyInput @oneOf {
+  templateById: SendSmsTemplateByIdInput
+  templateByName: SendSmsTemplateByNameInput
+  text: String
+}
+
+input SendSmsInput {
+  body: SendSmsBodyInput!
+  channel: [SmsChannel!]
+  sandbox: Boolean
+  to: String!
+}
+
+input SendSmsTemplateByIdInput {
+  id: String!
+  parameters: JSONObject
+}
+
+input SendSmsTemplateByNameInput {
+  name: String!
+  parameters: JSONObject
+}
+
+enum SmsChannel {
+  rcs
+  sent
+  sms
+  whatsapp
+}
+
+enum SmsDirection {
+  inbound
+  outbound
+}
+
+"""A message row as we recorded it — never a live read of the provider."""
+type SmsMessage {
+  body: String
+  channel: String
+  createdAt: DateTime!
+  direction: SmsDirection!
+  errorCode: String
+  errorMessage: String
+  fromNumber: String
+  id: String!
+  idempotencyKey: String
+  lastEventAt: DateTime
+  messageId: String!
+  status: SmsStatus!
+  statusRank: Int!
+  templateId: String
+  templateName: String
+  toNumber: String!
+  updatedAt: DateTime!
+  userId: String
+}
+
+enum SmsStatus {
+  blocked
+  delivered
+  failed
+  filtered
+  queued
+  read
+  received
+  routed
+  scheduled
+  sent
+}

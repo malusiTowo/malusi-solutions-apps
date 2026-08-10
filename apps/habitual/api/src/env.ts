@@ -4,13 +4,22 @@ import { z } from "zod";
 /** Validated, typed environment. Import from `~/env` instead of `process.env`. */
 export const env = createEnv({
   server: {
-    MONGODB_URI: z.string().url().optional(),
-    MONGODB_DB_NAME: z.string().default("habitual"),
+    /** Neon pooled connection string — used by both drivers at runtime. */
+    DATABASE_URL: z.string().url().optional(),
+    /** Neon direct endpoint. drizzle-kit DDL only; the app never reads it. */
+    DATABASE_URL_UNPOOLED: z.string().url().optional(),
+    /** Optional comma-separated read replicas. */
+    DATABASE_REPLICA_URLS: z.string().optional(),
     CLERK_SECRET_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     RESEND_API_KEY: z.string().optional(),
     ANTHROPIC_API_KEY: z.string().optional(),
+    SENT_DM_API_KEY: z.string().optional(),
+    /** `whsec_…` signing secret for the Sent webhook endpoint. */
+    SENT_DM_WEBHOOK_SECRET: z.string().optional(),
+    /** Set to "1" outside production to simulate every send. */
+    SENT_DM_SANDBOX: z.string().optional(),
     SENTRY_DSN: z.string().optional(),
     SENTRY_AUTH_TOKEN: z.string().optional(),
   },

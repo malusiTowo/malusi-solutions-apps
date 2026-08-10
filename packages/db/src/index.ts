@@ -1,3 +1,4 @@
-export { Mongo, MongoLive, layerFromConfig, type MongoConfig } from "./client";
 export { DbError } from "./errors";
-export * as Repository from "./repository";
+export type { DatabaseHandle, NeonQuery, Transaction } from "./handle";
+export { type DatabaseConfig, layerConfig, layerFromConfig } from "./layer";
+export { type DatabaseOps, makeOps } from "./query";

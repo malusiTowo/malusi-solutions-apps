@@ -41,6 +41,18 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # `typecheck` depends on `codegen`, so the artifacts have just been rebuilt.
+      # They are committed, so any drift from the schema means someone forgot to run
+      # `pnpm codegen` — fail here rather than shipping a stale contract.
+      # `add -N` first so a brand-new product's uncommitted artifacts are visible to
+      # `git diff`, which otherwise ignores untracked files entirely. Note the
+      # trailing `/**` on the directory pathspec — `'**/src/gql'` matches nothing and
+      # would silently skip the whole client preset output.
+      - name: Check generated GraphQL artifacts are committed
+        run: |
+          git add -A -N .
+          git diff --exit-code -- '**/schema.graphql' '**/src/gql/**'
+
       - name: Test
         run: pnpm test
 

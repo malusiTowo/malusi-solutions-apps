@@ -1,0 +1,14 @@
+/**
+ * Server-only barrel. Everything reachable from here pulls in `drizzle-orm`, so it
+ * is exposed as `@{{name}}/core/db` and never re-exported from the root barrel or
+ * from `@{{name}}/core/models`.
+ */
+export {
+  Database,
+  DatabaseLive,
+  type {{titleCase name}}Schema,
+  query,
+  transaction,
+  transactionPromise,
+} from "./client";
+export { type ItemRow, items, type NewItemRow } from "./schema";

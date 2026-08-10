@@ -1,0 +1,48 @@
+import { createApi } from "@repo/api";
+import { ParseResult, Schema } from "effect";
+import { GraphQLError } from "graphql";
+import type { AppEnv } from "./runtime";
+
+/**
+ * {{titleCase name}}'s Pothos builder.
+ *
+ * GraphQL input types cannot express the refinements a domain usually needs — a
+ * pattern, a non-empty string — so inputs are decoded a second time with Effect
+ * Schema. That decode fails with a `ParseError`, which `@repo/api` deliberately has
+ * no opinion about, so the product supplies the mapping.
+ */
+const parseErrorToGraphQL = (error: unknown): GraphQLError | undefined =>
+  ParseResult.isParseError(error)
+    ? new GraphQLError(error.message, { extensions: { code: "BAD_USER_INPUT" } })
+    : undefined;
+
+const api = createApi<AppEnv>({ mapError: parseErrorToGraphQL });
+
+export const builder = api.builder;
+export const runEffect = api.runEffect;
+
+// The root types are declared here rather than in a field module so that they exist
+// no matter which modules a product ends up importing. Fields are attached to them
+// with `builder.queryField` / `builder.mutationField`, one feature module at a time.
+builder.queryType({});
+builder.mutationType({});
+
+/**
+ * Decode a resolver argument, reporting a bad input as `BAD_USER_INPUT`.
+ *
+ * `runEffect`'s `mapError` only sees failures that travel through an Effect, and an
+ * input decode happens before the program is ever built. Without this the parse
+ * failure would reach the client as an unclassified throw — which Yoga masks as
+ * "Unexpected error." in production, turning a bad field into an opaque server
+ * fault. Both paths funnel through `parseErrorToGraphQL` so they agree.
+ */
+export const decodeInput = <A, I>(schema: Schema.Schema<A, I>): ((raw: unknown) => A) => {
+  const decode = Schema.decodeUnknownSync(schema);
+  return (raw) => {
+    try {
+      return decode(raw);
+    } catch (error) {
+      throw parseErrorToGraphQL(error) ?? error;
+    }
+  };
+};

@@ -1,0 +1,18 @@
+import { runtime as appRuntime, schema } from "@habitual/core";
+import { createGraphQLHandler } from "@repo/api/yoga";
+
+// Next's segment option must be named exactly `runtime`, so the Effect
+// ManagedRuntime is imported under an alias to keep the name free.
+// Required: the database layer uses `ws` for Neon pooled connections, which
+// needs the Node runtime.
+export const runtime = "nodejs";
+
+const { handleRequest } = createGraphQLHandler({
+  schema,
+  runtime: appRuntime,
+  graphqlEndpoint: "/api/graphql",
+});
+
+// OPTIONS is exported alongside the two verbs Yoga actually serves: the Expo app is
+// a cross-origin client, so preflight has to be answered from this route.
+export { handleRequest as GET, handleRequest as POST, handleRequest as OPTIONS };

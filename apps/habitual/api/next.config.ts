@@ -16,8 +16,11 @@ const nextConfig: NextConfig = {
     "@repo/analytics",
     "@repo/email",
     "@repo/notifications",
+    "@repo/sms",
   ],
-  serverExternalPackages: ["mongodb"],
+  // `ws` has optional native deps (bufferutil, utf-8-validate) that must not be
+  // bundled; the Neon driver is kept beside it so both resolve from node_modules.
+  serverExternalPackages: ["@neondatabase/serverless", "ws"],
   typescript: { ignoreBuildErrors: false },
 };
 

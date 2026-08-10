@@ -3,7 +3,9 @@ module.exports = (api) => {
   return {
     presets: ["babel-preset-expo"],
     plugins: [
-      ["react-native-unistyles/plugin", { root: "app" }],
+      // Routes live in src/app (matching tsconfig's `~/* -> ./src/*`), so the
+      // Unistyles plugin must scan src, not a top-level app directory.
+      ["react-native-unistyles/plugin", { root: "src" }],
       "react-native-worklets/plugin",
     ],
   };

@@ -1,0 +1,17 @@
+import { useQuery } from "@apollo/client/react";
+import { H1, Muted, Screen } from "~/components/ui";
+import { HealthQuery } from "~/lib/queries";
+
+export default function Home() {
+  // Apollo does not retry by default; `errorPolicy: "all"` keeps `data` alongside
+  // errors, which is what a status indicator on an unconfigured box wants.
+  const health = useQuery(HealthQuery, { errorPolicy: "all" });
+  return (
+    <Screen>
+      <H1>Home</H1>
+      <Muted>
+        API: {health.loading ? "checking…" : health.data?.health.ok ? "connected ✓" : "offline"}
+      </Muted>
+    </Screen>
+  );
+}

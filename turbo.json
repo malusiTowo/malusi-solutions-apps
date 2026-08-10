@@ -1,28 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": [
-    "NODE_ENV",
-    "MONGODB_URI",
-    "MONGODB_DB_NAME",
-    "CLERK_SECRET_KEY",
-    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-    "STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET",
-    "RESEND_API_KEY",
-    "ANTHROPIC_API_KEY",
-    "NEXT_PUBLIC_POSTHOG_KEY",
-    "NEXT_PUBLIC_POSTHOG_HOST",
-    "SENTRY_DSN",
-    "NEXT_PUBLIC_SENTRY_DSN",
-    "SENTRY_AUTH_TOKEN",
-    "EXPO_PUBLIC_API_URL",
-    "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
-    "EXPO_PUBLIC_POSTHOG_KEY",
-    "EXPO_PUBLIC_POSTHOG_HOST",
-    "EXPO_PUBLIC_SENTRY_DSN"
-  ],
-  "globalDependencies": [".env"],
+  "globalEnv": ["NODE_ENV", "CI", "SKIP_ENV_VALIDATION", "NEXT_RUNTIME"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -34,8 +13,12 @@
     },
     "lint": {},
     "format": {},
+    "codegen": {
+      "dependsOn": ["^codegen"],
+      "outputs": ["schema.graphql", "src/gql/**"]
+    },
     "typecheck": {
-      "dependsOn": ["^topo"]
+      "dependsOn": ["^topo", "codegen"]
     },
     "test": {
       "dependsOn": ["^topo"]
@@ -44,6 +27,22 @@
       "dependsOn": ["^topo"]
     },
     "clean": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:seed": {
       "cache": false
     }
   }

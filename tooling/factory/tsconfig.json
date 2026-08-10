@@ -1,0 +1,11 @@
+{
+  "extends": "@tooling/typescript/internal-package.json",
+  "compilerOptions": {
+    // The factory is Node-only tooling (never bundled for a browser), so it can use
+    // the non-mutating array methods — toSorted/toReversed — that oxlint prefers.
+    "lib": ["ES2023"],
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,51 @@
+import { constructWebhookEvent, createStripeClient } from "@repo/payments";
+import { env } from "~/env";
+
+// Signature verification needs the raw body and Node crypto.
+export const runtime = "nodejs";
+
+/**
+ * Stripe webhook receiver.
+ *
+ * The endpoint URL and its signing secret are created by the factory's `stripe`
+ * driver, which points Stripe at `<deployment>/api/webhooks/stripe` and writes
+ * STRIPE_WEBHOOK_SECRET into this app's environment.
+ *
+ * Returns 501 rather than 500 when Stripe is not configured, so a product that has
+ * not enabled payments yet still deploys cleanly.
+ */
+export async function POST(req: Request): Promise<Response> {
+  const secretKey = env.STRIPE_SECRET_KEY;
+  const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
+  if (!secretKey || !webhookSecret) {
+    return new Response("Stripe not configured", { status: 501 });
+  }
+
+  const signature = req.headers.get("stripe-signature");
+  if (!signature) return new Response("Missing signature", { status: 400 });
+
+  // Must be the raw text: any JSON round-trip breaks the signature.
+  const payload = await req.text();
+
+  try {
+    const stripe = createStripeClient(secretKey);
+    const event = constructWebhookEvent(stripe, payload, signature, webhookSecret);
+
+    switch (event.type) {
+      case "checkout.session.completed":
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted":
+        // TODO({{name}}): grant or revoke entitlements for this customer.
+        console.log(`[stripe] ${event.type}`);
+        break;
+      default:
+        console.log(`[stripe] unhandled ${event.type}`);
+    }
+
+    return Response.json({ received: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Invalid payload";
+    return new Response(`Webhook error: ${message}`, { status: 400 });
+  }
+}

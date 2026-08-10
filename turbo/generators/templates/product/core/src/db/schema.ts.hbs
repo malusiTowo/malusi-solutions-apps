@@ -1,0 +1,27 @@
+import { index, pgTable, text, timestamp, uuid } from "@repo/db/pg";
+
+/**
+ * {{titleCase name}}'s Postgres schema.
+ *
+ * Server-only: it pulls in `drizzle-orm/pg-core`, so nothing here may ever be
+ * re-exported from `@{{name}}/core/models` — that subpath is bundled by Metro.
+ * The dependency runs one way, `db/schema.ts -> models/`, never back.
+ */
+export const items = pgTable(
+  "items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Raw Clerk user id. No foreign key: Clerk owns identity, not this database. */
+    userId: text("user_id").notNull(),
+    title: text("title").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [index("items_user_id_idx").on(t.userId)],
+);
+
+export type ItemRow = typeof items.$inferSelect;
+export type NewItemRow = typeof items.$inferInsert;

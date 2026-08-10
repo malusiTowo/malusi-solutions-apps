@@ -1,38 +1,56 @@
-import type { AppRouter } from "@habitual/core";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
-import { createTRPCReact } from "@trpc/react-query";
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from "@apollo/client";
+import { SetContextLink } from "@apollo/client/link/context";
+import { ApolloProvider } from "@apollo/client/react";
+import { useAuth } from "@clerk/clerk-expo";
 import { type ReactNode, useState } from "react";
-import superjson from "superjson";
+import { clerkConfigured } from "~/lib/auth";
 
-/** Typed tRPC client for Habitual's API. Types flow from `@habitual/core`. */
-export const trpc = createTRPCReact<AppRouter>();
+/** Apollo client for Habitual's API. Documents live in `~/lib/queries`. */
 
 const getBaseUrl = () => process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
 
-export function TRPCProvider(props: {
+function makeClient(getToken?: () => Promise<string | null>) {
+  const auth = new SetContextLink(async (prevContext) => {
+    const token = await getToken?.();
+    return {
+      headers: {
+        ...prevContext.headers,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    };
+  });
+
+  return new ApolloClient({
+    link: ApolloLink.from([auth, new HttpLink({ uri: `${getBaseUrl()}/api/graphql` })]),
+    cache: new InMemoryCache(),
+  });
+}
+
+export function GraphQLProvider(props: {
   children: ReactNode;
   getToken?: () => Promise<string | null>;
 }) {
-  const [queryClient] = useState(() => new QueryClient());
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
-      links: [
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
-          transformer: superjson,
-          async headers() {
-            const token = await props.getToken?.();
-            return token ? { Authorization: `Bearer ${token}` } : {};
-          },
-        }),
-      ],
-    }),
-  );
+  const [client] = useState(() => makeClient(props.getToken));
+  return <ApolloProvider client={client}>{props.children}</ApolloProvider>;
+}
 
-  return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
-    </trpc.Provider>
+function AuthedGraphQLProvider({ children }: { children: ReactNode }) {
+  const { getToken } = useAuth();
+  return <GraphQLProvider getToken={getToken}>{children}</GraphQLProvider>;
+}
+
+/**
+ * Mount this rather than `GraphQLProvider` directly: it attaches Clerk's session
+ * token so authenticated fields are reachable from the app. Without it every
+ * protected field returns UNAUTHENTICATED.
+ *
+ * `clerkConfigured` is a module constant, so the branch is stable across renders and
+ * hook order never changes.
+ */
+export function ApiProvider({ children }: { children: ReactNode }) {
+  return clerkConfigured ? (
+    <AuthedGraphQLProvider>{children}</AuthedGraphQLProvider>
+  ) : (
+    <GraphQLProvider>{children}</GraphQLProvider>
   );
 }

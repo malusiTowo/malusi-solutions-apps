@@ -1,0 +1,79 @@
+import { requireUserId } from "@repo/api";
+import { desc, eq } from "@repo/db/orm";
+import { Effect, Schema } from "effect";
+import { items, query } from "../db";
+import { builder, decodeInput, runEffect } from "./builder";
+import { ItemType } from "./types";
+
+/**
+ * The example feature module. Each such module registers its own fields on the
+ * shared builder and is imported for its side effects by `./schema`.
+ */
+
+/** The wire contract. */
+const CreateItemInput = builder.inputType("CreateItemInput", {
+  fields: (t) => ({
+    title: t.string({ required: true }),
+  }),
+});
+
+/**
+ * The refinements GraphQL cannot express — here, a non-empty title.
+ *
+ * The two declarations are bound by the assignability check below, so adding a field
+ * to one and not the other is a `pnpm typecheck` failure rather than a runtime
+ * surprise. Keep this pattern when you add real inputs.
+ */
+const CreateItemSchema = Schema.Struct({
+  title: Schema.String.pipe(Schema.minLength(1)),
+});
+
+type CreateItemPayload = typeof CreateItemSchema.Type;
+const _createItemShapesAgree: (input: typeof CreateItemInput.$inferInput) => CreateItemPayload = (
+  input,
+) => input;
+
+const parseCreateItem = decodeInput(CreateItemSchema);
+
+builder.queryField("items", (t) =>
+  t.withAuth({ authenticated: true }).field({
+    type: [ItemType],
+    resolve: (_parent, _args, ctx) =>
+      runEffect(
+        ctx,
+        Effect.flatMap(requireUserId, (userId) =>
+          query("items.list", ({ read }) =>
+            read
+              .select()
+              .from(items)
+              .where(eq(items.userId, userId))
+              .orderBy(desc(items.createdAt)),
+          ),
+        ),
+      ),
+  }),
+);
+
+builder.mutationField("createItem", (t) =>
+  t.withAuth({ authenticated: true }).field({
+    type: ItemType,
+    args: { input: t.arg({ type: CreateItemInput, required: true }) },
+    resolve: (_parent, args, ctx) => {
+      const input = parseCreateItem(args.input);
+      return runEffect(
+        ctx,
+        Effect.flatMap(requireUserId, (userId) =>
+          query("items.create", ({ db }) =>
+            db.insert(items).values({ userId, title: input.title }).returning(),
+          ).pipe(
+            Effect.flatMap((rows) =>
+              rows[0] === undefined
+                ? Effect.die(new Error("items.create returned no row"))
+                : Effect.succeed(rows[0]),
+            ),
+          ),
+        ),
+      );
+    },
+  }),
+);

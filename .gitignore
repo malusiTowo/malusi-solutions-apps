@@ -21,9 +21,13 @@ ios/
 .expo-shared/
 
 # env
+# Per-app .env files (apps/<product>/{api,mobile}/.env) are covered by these
+# patterns too — gitignore matches at any depth. Secrets live in Infisical; run
+# `pnpm factory sync <product>` to materialise them locally.
 .env
 .env.*
 !.env.example
+!.env.factory.example
 
 # sentry
 .sentryclirc

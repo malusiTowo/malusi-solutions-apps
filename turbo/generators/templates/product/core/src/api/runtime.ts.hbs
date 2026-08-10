@@ -1,0 +1,30 @@
+import { AiEngine, AiEngineLive, registryLayer } from "@repo/ai";
+import { AnthropicLive } from "@repo/ai/anthropic";
+import { Layer, ManagedRuntime } from "effect";
+import { type Database, DatabaseLive } from "../db";
+
+/**
+ * {{titleCase name}}'s service environment. `AppEnv` is the set of Effect services
+ * every resolver can reach.
+ *
+ * The AI engine is wired in from the start so `runEffect(ctx, AiEngine)` works
+ * without further plumbing. Register this product's modules by passing them to
+ * `registryLayer` below — an empty registry is valid, and the engine only talks to
+ * Anthropic when a resolver actually calls it, so a product with no
+ * ANTHROPIC_API_KEY still boots.
+ *
+ * This module is deliberately separate from `./builder` and `./schema`: building the
+ * schema must never construct a runtime, so that `scripts/schema.ts` can emit
+ * `schema.graphql` on a box with no environment at all.
+ */
+export type AppEnv = Database | AiEngine;
+
+/** Add this product's AI modules here as they land. */
+const AiRegistryLive = registryLayer([]);
+
+const AiLive = AiEngineLive.pipe(Layer.provide(Layer.merge(AiRegistryLive, AnthropicLive)));
+
+export const AppLive = Layer.merge(DatabaseLive, AiLive);
+
+/** Singleton runtime reused across serverless invocations. */
+export const runtime = ManagedRuntime.make(AppLive);
