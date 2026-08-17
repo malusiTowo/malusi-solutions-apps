@@ -1,7 +1,7 @@
 /**
  * `pnpm factory <command> <product>`
  *
- *   new      scaffold code (via `turbo gen product`) then provision
+ *   new      scaffold code (via `pnpm gen product`) then provision
  *   plan     show what would be created, touching nothing
  *   apply    provision, idempotently
  *   verify   health-check every credential

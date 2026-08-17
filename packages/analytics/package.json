@@ -9,8 +9,7 @@
     "./native": "./src/native.tsx"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "oxlint .",
+    "clean": "rm -rf node_modules",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

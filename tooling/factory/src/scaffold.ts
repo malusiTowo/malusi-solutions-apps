@@ -2,7 +2,7 @@
  * `factory new` — scaffold the code, then let the caller provision.
  *
  * This **wraps** the existing plop generator rather than replacing it, so
- * `turbo/generators/templates` stays the single source of truth for what a product's
+ * `tooling/generators/templates` stays the single source of truth for what a product's
  * files look like, and `pnpm gen product` keeps working standalone for offline use.
  *
  * The factory adds the two things plop cannot: a dev port that does not collide with
@@ -91,7 +91,7 @@ export async function newProduct(options: NewProductOptions): Promise<{ devPort:
   } else {
     logger.info(`Scaffolding apps/${product} on port ${devPort}`);
     // plop reads `name` and `devPort` from the prompt bypass arguments.
-    await exec("pnpm", ["turbo", "gen", "product", "--args", product, String(devPort)], {
+    await exec("pnpm", ["gen", "product", product, String(devPort)], {
       cwd: repoRoot,
       driver: "scaffold",
       timeoutSeconds: 300,

@@ -1,6 +1,6 @@
 # Malusi Solutions — Apps Monorepo
 
-A pnpm + Turborepo **project factory** for Malusi Solutions products (mobile, web,
+A pnpm + Vite+ **project factory** for Malusi Solutions products (mobile, web,
 and future platforms). It is built around reusable **logic bricks**, and
 `pnpm factory new <name>` produces not just the code but a real project in every
 third-party service the product needs — database, auth, payments, email, analytics,
@@ -10,27 +10,27 @@ The first product is **Habitual** — a dark, gamified, AI-powered habit tracker
 
 ## Stack
 
-| Concern              | Choice                                                       |
-| -------------------- | ------------------------------------------------------------ |
-| Monorepo             | pnpm workspaces + Turborepo                                  |
-| Language             | TypeScript (strict)                                          |
-| Business logic       | Effect TS                                                    |
-| Data                 | Neon Postgres + Drizzle ORM (wrapped in Effect)              |
-| API                  | GraphQL (Pothos + Yoga), served from each product's Next app |
-| Auth                 | Clerk                                                        |
-| Payments             | Stripe                                                       |
-| Email                | Resend + react-email                                         |
-| Analytics            | PostHog (web + native)                                       |
-| AI                   | Provider-agnostic engine (`@repo/ai`) — Anthropic by default |
-| Messaging            | Sent.dm via `@repo/sms` — SMS · WhatsApp · RCS               |
-| Mobile               | Expo + expo-router + Unistyles                               |
-| Web                  | Next.js 16 + Tailwind v4 + shadcn/ui                         |
-| Errors               | Sentry                                                       |
-| Secrets              | Infisical (source of truth) → per-app `.env`                 |
-| Infra / hosting      | Vercel · Neon · Cloudflare DNS · EAS                         |
-| Provisioning         | `tooling/factory` — a driver per service, plain TS           |
-| Env                  | `@t3-oss/env` (validated), one `.env` per deployable         |
-| Lint / Format / Test | oxlint · oxfmt · Vitest                                      |
+| Concern              | Choice                                                        |
+| -------------------- | ------------------------------------------------------------- |
+| Monorepo             | pnpm workspaces + Vite+ (`vp` — task runner, lint, fmt, test) |
+| Language             | TypeScript (strict)                                           |
+| Business logic       | Effect TS                                                     |
+| Data                 | Neon Postgres + Drizzle ORM (wrapped in Effect)               |
+| API                  | GraphQL (Pothos + Yoga), served from each product's Next app  |
+| Auth                 | Clerk                                                         |
+| Payments             | Stripe                                                        |
+| Email                | Resend + react-email                                          |
+| Analytics            | PostHog (web + native)                                        |
+| AI                   | Provider-agnostic engine (`@repo/ai`) — Anthropic by default  |
+| Messaging            | Sent.dm via `@repo/sms` — SMS · WhatsApp · RCS                |
+| Mobile               | Expo + expo-router + Unistyles                                |
+| Web                  | Next.js 16 + Tailwind v4 + shadcn/ui                          |
+| Errors               | Sentry                                                        |
+| Secrets              | Infisical (source of truth) → per-app `.env`                  |
+| Infra / hosting      | Vercel · Neon · Cloudflare DNS · EAS                          |
+| Provisioning         | `tooling/factory` — a driver per service, plain TS            |
+| Env                  | `@t3-oss/env` (validated), one `.env` per deployable          |
+| Lint / Format / Test | oxlint · oxfmt · Vitest — all via Vite+ (`vp`)                |
 
 ## Layout
 
@@ -44,9 +44,8 @@ packages/     generic logic bricks — no product-specific code
   api  auth  db  design  ui  ai  analytics  email  payments  notifications  sms
 tooling/
   typescript/  shared tsconfigs
-  github/      CI
   factory/     the project factory — provisioning drivers + `pnpm factory` CLI
-turbo/generators/  file scaffolding (pnpm gen)
+  generators/  file scaffolding (pnpm gen — plain Plop)
 ```
 
 Per product, the factory also writes:
@@ -57,7 +56,7 @@ apps/<product>/
   .factory/state.json        remote resource ids — no secrets (committed)
   .factory/manual-steps.md   the punch-list for providers with no create API
   api/.env  mobile/.env      credentials (gitignored, generated)
-  api/turbo.json  mobile/turbo.json   that app's env vars, for correct caching
+  api/vite.config.ts  mobile/vite.config.ts   that app's tasks + env cache keys
 ```
 
 **Boundary rule:** `packages/*` are generic and never import from `apps/*`. Anything
@@ -83,12 +82,12 @@ Each deployable reads its own `.env` (`apps/<product>/api/.env`,
 ## Common commands
 
 ```bash
-pnpm typecheck     # tsc across all workspaces (runs codegen first)
-pnpm lint          # oxlint
-pnpm format        # oxfmt --check   (pnpm format:fix to write)
-pnpm test          # vitest
+pnpm typecheck     # vp run: tsc across all workspaces, cached (runs codegen first)
+pnpm lint          # vp lint (oxlint)
+pnpm format        # vp fmt --check   (pnpm format:fix to write)
+pnpm test          # vp test (Vitest, all packages from the root config)
 pnpm codegen       # schema.graphql from Pothos, then typed documents for mobile
-pnpm build         # turbo build (Next build + Expo export)
+pnpm build         # vp run: Next build + Expo export, cached
 ```
 
 Both codegen artifacts — `apps/<product>/core/schema.graphql` and

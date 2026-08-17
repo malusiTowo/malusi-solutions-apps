@@ -10,10 +10,7 @@
     "./db": "./src/db/index.ts"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "oxlint .",
-    "typecheck": "tsc --noEmit",
-    "codegen": "tsx scripts/schema.ts",
+    "clean": "rm -rf node_modules",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",

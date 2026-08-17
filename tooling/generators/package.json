@@ -1,18 +1,16 @@
 {
-  "name": "@repo/{{name}}",
+  "name": "@tooling/generators",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "oxlint .",
+    "clean": "rm -rf node_modules",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@tooling/typescript": "workspace:*",
+    "@types/node": "22.13.9",
+    "node-plop": "0.32.3",
     "typescript": "6.0.3"
   }
 }

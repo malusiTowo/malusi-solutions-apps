@@ -1,4 +1,4 @@
-import type { PlopTypes } from "@turbo/gen";
+import type { NodePlopAPI } from "node-plop";
 
 /**
  * Scaffolding for the "new product in 10 minutes" goal.
@@ -13,7 +13,7 @@ import type { PlopTypes } from "@turbo/gen";
  * credentials into the app's .env files. Use `pnpm gen product` directly when you
  * want the code without touching any remote service.
  */
-export default function generator(plop: PlopTypes.NodePlopAPI): void {
+export default function generator(plop: NodePlopAPI): void {
   plop.setHelper("titleCase", (text: string) =>
     text.replace(/(^|[-_ ])(\w)/g, (_m, _s, c: string) => c.toUpperCase()),
   );

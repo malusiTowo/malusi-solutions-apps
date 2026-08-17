@@ -2,7 +2,11 @@
 
 ## Architecture
 
-- **pnpm workspaces + Turborepo.** Workspaces: `apps/*/*`, `packages/*`, `tooling/*`.
+- **pnpm workspaces + Vite+ (`vp`).** Workspaces: `apps/*/*`, `packages/*`, `tooling/*`.
+  The `vite-plus` root devDependency pins the toolchain version; the global `vp` shim
+  defers to it. Task graph, lint, format, and test config all live in `vite.config.ts`
+  files (root + one per deployable). Use `vp run <name>`, never bare `vp dev`/`vp build` —
+  built-ins can't be overridden and always launch Vite's own server, which no app here uses.
 - **Products** live at `apps/<product>/` and contain multiple deployables plus a domain
   package: `core/` (logic), `api/` (Next.js), `mobile/` (Expo).
 - **Packages** (`packages/*`) are generic **logic bricks**. Hard rule:
@@ -109,9 +113,20 @@
 
 ## Tooling
 
-- **oxlint** (`.oxlintrc.json`) and **oxfmt** (`.oxfmtrc.json`). Run `pnpm format:fix`
-  before committing. If oxfmt is ever too limiting, Prettier is the documented fallback.
-- **Vitest** for unit tests (`*.test.ts`). Packages without tests use `--passWithNoTests`.
+- **oxlint** and **oxfmt** via `vp lint` / `vp fmt`, configured in the root
+  `vite.config.ts` `lint`/`fmt` blocks (no rc files — Vite+ recommends against them).
+  Run `pnpm format:fix` before committing.
+- **Vitest** via `vp test`, driven entirely by the root `vite.config.ts`
+  `test.projects` globs. Packages define **no** test script and no vitest dependency —
+  any workspace package with `*.test.ts` files is picked up automatically, so new
+  packages are covered from birth.
+- **Task running** is `vp run` (Vite Task). Tasks needing `dependsOn`, env cache keys,
+  or output restoration are defined in a deployable's `vite.config.ts` `run.tasks`
+  (and removed from `package.json` — a name cannot exist in both). Plain scripts
+  (`dev`, `clean`, `db:*`) stay in `package.json`, uncached, with a full environment.
+  Inputs are fingerprinted automatically (actual file reads, across workspace
+  packages), so there is no `^topo`-style synthetic task and no manual `inputs` globs.
+  Cached tasks run with a **filtered environment** — see Environment below.
 - TypeScript configs are in `tooling/typescript`. `declaration` is off (packages are
   consumed as source, never emitted).
 
@@ -123,10 +138,12 @@
 - Variable **names are identical across products** (`MONGODB_URI`, never
   `ACME_MONGODB_URI`). Isolation comes from _which file_ an app loads, which is why
   nothing in `packages/*` needs to know a product exists. Don't add product prefixes.
-- `turbo.json` at the root declares only `NODE_ENV`/`CI`/`SKIP_ENV_VALIDATION`/
-  `NEXT_RUNTIME`. Each app declares its own vars in its own `turbo.json`
-  (`{"extends": ["//"]}`) with `inputs: ["$TURBO_DEFAULT$", ".env"]`. Add a new var
-  there or Turbo will cache across a change to it.
+- Each app's `build` task declares its vars in its `vite.config.ts`
+  (`run.tasks.build.env`). Cached tasks run with a **filtered environment**: only
+  listed vars (fingerprinted into the cache key) plus vp's common set (`CI`,
+  `NEXT_*`, `PATH`, …) reach the task. Add a new var to the list or the cache will
+  span changes to it — and the build won't see it at all. `.env` files need no
+  declaration; they're read from disk and fingerprinted as file inputs.
 - Env vars are validated with `@t3-oss/env`. Never read `process.env` directly in app
   code — import from `~/env`.
 - The root `.env.factory` is different in kind: org-level tokens the **factory**
@@ -175,7 +192,8 @@
 
 ## Scaffolding
 
-- `pnpm gen product` / `pnpm gen package` — templates in `turbo/generators/templates`.
+- `pnpm gen product` / `pnpm gen package` — plain Plop (`tooling/generators/plopfile.ts`,
+  run by `tooling/generators/cli.ts` under tsx); templates in `tooling/generators/templates`.
   Keep templates in sync with the patterns proven in `apps/habitual`.
 - `gen product` produces **files only, no side effects**. `pnpm factory new` wraps it
   and adds the remote resources, so templates stay the single source of truth.
