@@ -8,9 +8,7 @@
     "./yoga": "./src/yoga.ts"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "oxlint .",
-    "test": "vitest run",
+    "clean": "rm -rf node_modules",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -25,7 +23,6 @@
   },
   "devDependencies": {
     "@tooling/typescript": "workspace:*",
-    "typescript": "6.0.3",
-    "vitest": "4.1.10"
+    "typescript": "6.0.3"
   }
 }

@@ -105,7 +105,7 @@ export const vercelDriver: Driver = {
           rootDirectory: config.rootDirectory ?? `apps/${ctx.product}/api`,
           gitRepository: { type: "github", repo: `${GITHUB_ORG}/${ctx.product}` },
           installCommand: "pnpm install --frozen-lockfile",
-          buildCommand: `pnpm turbo run build --filter=@${ctx.product}/api`,
+          buildCommand: `pnpm exec vp run --filter @${ctx.product}/api build`,
         },
       });
       ctx.logger.info(`  created Vercel project ${project.name} (${project.id})`);

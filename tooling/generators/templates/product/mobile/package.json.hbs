@@ -7,12 +7,8 @@
     "dev": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "build": "expo export --platform ios --output-dir expo-export",
     "prebuild": "expo prebuild",
-    "clean": "rm -rf .turbo .expo node_modules expo-export",
-    "lint": "oxlint .",
-    "typecheck": "tsc --noEmit",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "clean": "rm -rf .expo node_modules expo-export"
   },
   "dependencies": {
     "@apollo/client": "4.2.10",

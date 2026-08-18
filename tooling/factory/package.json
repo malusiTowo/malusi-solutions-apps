@@ -8,10 +8,8 @@
     "./manifest": "./src/manifest.ts"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "oxlint .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "clean": "rm -rf node_modules",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "4.4.3"
@@ -19,7 +17,6 @@
   "devDependencies": {
     "@tooling/typescript": "workspace:*",
     "@types/node": "22.13.9",
-    "typescript": "6.0.3",
-    "vitest": "4.1.10"
+    "typescript": "6.0.3"
   }
 }

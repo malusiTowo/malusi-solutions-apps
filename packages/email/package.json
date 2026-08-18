@@ -8,8 +8,7 @@
     "./components": "./src/components/index.ts"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "oxlint .",
+    "clean": "rm -rf node_modules",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
